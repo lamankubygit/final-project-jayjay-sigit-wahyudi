@@ -2,10 +2,11 @@ package com.sigitwahyudi.web.steps;
 
 import com.sigitwahyudi.web.hooks.WebHooks;
 import com.sigitwahyudi.web.pages.CheckoutPage;
-import com.sigitwahyudi.web.pages.LoginPage;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
+import java.util.Map;
 
 public class CheckoutSteps {
 
@@ -73,5 +74,46 @@ public class CheckoutSteps {
     @Then("produk tidak tampil lagi di daftar cart")
     public void produk_tidak_tampil_lagi_di_daftar_cart() {
         Assertions.assertTrue(checkoutPage.isCartEmpty(), "Produk masih ada di cart!");
+    }
+
+    // ===== Tambahan untuk End-to-End Checkout =====
+    @When("user klik tombol Place Order")
+    public void user_klik_tombol_place_order() {
+        checkoutPage.clickPlaceOrder();
+    }
+
+    @When("user mengisi form pemesanan:")
+    public void user_mengisi_form_pemesanan(DataTable dataTable) {
+        Map<String, String> data = dataTable.asMap(String.class, String.class);
+        checkoutPage.fillOrderForm(
+                data.get("name"),
+                data.get("country"),
+                data.get("city"),
+                data.get("card"),
+                data.get("month"),
+                data.get("year")
+        );
+    }
+
+    @When("user klik tombol Purchase")
+    public void user_klik_tombol_purchase() {
+        checkoutPage.clickPurchase();
+    }
+
+    @Then("muncul pop up konfirmasi {string}")
+    public void muncul_pop_up_konfirmasi(String expectedText) {
+        String actualText = checkoutPage.getPurchaseConfirmationText();
+        Assertions.assertTrue(actualText.contains(expectedText),
+                "Pesan konfirmasi tidak sesuai! Ditemukan: " + actualText);
+    }
+
+    @When("user klik tombol OK")
+    public void user_klik_tombol_ok() {
+        checkoutPage.clickOkAfterPurchase();
+    }
+
+    @When("user klik tombol Logout")
+    public void user_klik_tombol_logout() {
+        checkoutPage.logout();
     }
 }

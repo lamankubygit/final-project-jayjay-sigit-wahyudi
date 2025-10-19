@@ -20,11 +20,11 @@ Feature: Pengujian API DummyAPI.io - Endpoint Users
     Then status code yang diterima adalah 400 atau 404
     And response body berisi pesan error "PARAMS_NOT_VALID"
 
-#  @positive
-#  Scenario: Menghapus user berdasarkan ID valid
-#    When sistem mengirim request DELETE user dengan ID "60d0fe4f5311236168a109f9"
-#    Then status code yang diterima adalah 200
-#    And response berisi ID yang sama seperti user yang dihapus "60d0fe4f5311236168a109f9"
+  @positive
+  Scenario: Menghapus user berdasarkan ID valid
+    When sistem mengirim request DELETE user dengan ID "60d0fe4f5311236168a109f9"
+    Then status code yang diterima adalah 200
+    And response berisi ID yang sama seperti user yang dihapus "60d0fe4f5311236168a109f9"
 
   @negative
   Scenario: Menghapus user yang sudah tidak ada atau sudah terhapus

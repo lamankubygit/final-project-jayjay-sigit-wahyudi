@@ -18,6 +18,19 @@ public class CheckoutPage {
     private By cartItemPrice = By.xpath("//tbody/tr/td[3]");
     private By deleteButton = By.xpath("//a[text()='Delete']");
 
+    // checkout flow
+    private By placeOrderButton = By.xpath("//button[text()='Place Order']");
+    private By nameField = By.id("name");
+    private By countryField = By.id("country");
+    private By cityField = By.id("city");
+    private By cardField = By.id("card");
+    private By monthField = By.id("month");
+    private By yearField = By.id("year");
+    private By purchaseButton = By.xpath("//button[text()='Purchase']");
+    private By confirmationModal = By.xpath("//div[@class='sweet-alert  showSweetAlert visible']");
+    private By okButton = By.xpath("//button[text()='OK']");
+    private By logoutButton = By.id("logout2");
+
     // =================== Constructor =================== //
     public CheckoutPage(WebDriver driver) {
         this.driver = driver;
@@ -47,17 +60,12 @@ public class CheckoutPage {
 
     public void acceptAlert() {
         try {
-            // tunggu maksimal 5 detik sampai alert muncul
             WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(5));
             shortWait.until(ExpectedConditions.alertIsPresent());
             Alert alert = driver.switchTo().alert();
             alert.accept();
-            System.out.println("✅ Alert diterima: " + alert.getText());
-        } catch (TimeoutException | NoAlertPresentException e) {
-            System.out.println("⚠️ Tidak ada alert yang muncul (mungkin sudah auto-dismiss atau terlalu cepat)");
-        }
+        } catch (TimeoutException | NoAlertPresentException ignored) {}
     }
-
 
     public String getProductPrice() {
         String text = wait.until(ExpectedConditions.visibilityOfElementLocated(priceOnProductPage)).getText();
@@ -84,13 +92,13 @@ public class CheckoutPage {
     public String getProductPriceInCart() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(cartItemPrice));
         String price = driver.findElement(cartItemPrice).getText();
-        return price.replaceAll("[^0-9]", ""); // ambil hanya angka
+        return price.replaceAll("[^0-9]", "");
     }
 
     public void deleteProductFromCart() {
         wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
         try {
-            Thread.sleep(2000); // beri jeda supaya table terupdate
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -99,9 +107,53 @@ public class CheckoutPage {
     public boolean isCartEmpty() {
         try {
             driver.findElement(cartItemName);
-            return false; // masih ada produk
+            return false;
         } catch (NoSuchElementException e) {
-            return true; // cart kosong
+            return true;
         }
+    }
+
+    // =================== Tambahan untuk End-to-End Checkout =================== //
+    public void clickPlaceOrder() {
+        wait.until(ExpectedConditions.elementToBeClickable(placeOrderButton)).click();
+    }
+
+    public void fillOrderForm(String name, String country, String city, String card, String month, String year) {
+        // Pastikan popup sudah tampil penuh
+        wait.until(ExpectedConditions.visibilityOfElementLocated(nameField));
+
+        // Scroll ke popup agar field terlihat
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", driver.findElement(nameField));
+
+        // Fokus ke elemen dulu
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameField));
+        nameInput.click();
+        nameInput.clear();
+        nameInput.sendKeys(name);
+
+        // Isi field lainnya
+        driver.findElement(countryField).sendKeys(country);
+        driver.findElement(cityField).sendKeys(city);
+        driver.findElement(cardField).sendKeys(card);
+        driver.findElement(monthField).sendKeys(month);
+        driver.findElement(yearField).sendKeys(year);
+    }
+
+
+    public void clickPurchase() {
+        wait.until(ExpectedConditions.elementToBeClickable(purchaseButton)).click();
+    }
+
+    public String getPurchaseConfirmationText() {
+        WebElement modal = wait.until(ExpectedConditions.visibilityOfElementLocated(confirmationModal));
+        return modal.getText();
+    }
+
+    public void clickOkAfterPurchase() {
+        wait.until(ExpectedConditions.elementToBeClickable(okButton)).click();
+    }
+
+    public void logout() {
+        wait.until(ExpectedConditions.elementToBeClickable(logoutButton)).click();
     }
 }

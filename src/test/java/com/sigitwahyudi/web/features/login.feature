@@ -6,19 +6,9 @@ Feature: Login ke website Demoblaze
     And user login dengan username "standard_user" dan password "secret_sauce"
     And user berhasil masuk dan button menu logout terlihat
 
-  @positive
-  Scenario: Login berhasil menampilkan teks Welcome
-    Given user membuka halaman login Demoblaze
-    When user login dengan username "standard_user" dan password "secret_sauce"
-    Then user berhasil masuk dan button menu logout terlihat
-    And teks "Welcome standard_user" tampil di halaman utama
-
   @positive @closeBrowser
-  Scenario: Menambahkan produk Apple monitor 24 ke cart
-    When user klik menu "Monitors"
-    And user pilih produk "Apple monitor 24"
-    And user klik tombol Add to cart
-    Then muncul pop up notifikasi "Product added."
+  Scenario: Login berhasil menampilkan teks Welcome
+    Then teks "Welcome standard_user" tampil di halaman utama
 
   @positive @closeBrowser
   Scenario: Melihat produk di cart dan verifikasi harga
@@ -28,3 +18,30 @@ Feature: Login ke website Demoblaze
     And harga produk sama dengan harga saat di halaman produk
     When user menghapus produk dari cart
     Then produk tidak tampil lagi di daftar cart
+
+  @positive @closeBrowser
+  Scenario: Menambahkan produk Apple monitor 24 ke cart
+    When user klik menu "Monitors"
+    And user pilih produk "Apple monitor 24"
+    And user klik tombol Add to cart
+    Then muncul pop up notifikasi "Product added."
+
+  @positive @closeBrowser
+  Scenario: End to end checkout produk Apple monitor 24
+    When user klik menu "Monitors"
+    And user pilih produk "Apple monitor 24"
+    And user klik tombol Add to cart
+    Then muncul pop up notifikasi "Product added."
+    When user membuka menu Cart
+    And user klik tombol Place Order
+    And user mengisi form pemesanan:
+      | name      | testuser          |
+      | country   | Indonesia         |
+      | city      | Bandung           |
+      | card      | 1234567890123456  |
+      | month     | December          |
+      | year      | 2025              |
+    And user klik tombol Purchase
+    Then muncul pop up konfirmasi "Thank you for your purchase!"
+    When user klik tombol OK
+    And user klik tombol Logout
