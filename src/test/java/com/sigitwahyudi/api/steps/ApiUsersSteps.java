@@ -3,7 +3,6 @@ package com.sigitwahyudi.api.steps;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
 import com.sigitwahyudi.api.requests.DummyApiRequest;
-
 import java.util.Map;
 import java.util.List;
 
@@ -24,13 +23,15 @@ public class ApiUsersSteps {
         List<String> ids = response.jsonPath().getList("data.id");
         if (ids != null && !ids.isEmpty()) {
             selectedUserId = ids.get(0); // ambil user pertama
-            System.out.println("✅ ID user tersimpan untuk DELETE nanti: " + selectedUserId);
+            System.out.println("✅ ID user tersimpan untuk skenario berikut: " + selectedUserId);
         }
     }
 
     @When("sistem mengirim request GET user dengan ID {string}")
     public void getUserById(String id) {
-        response = DummyApiRequest.getUserById(id);
+        String targetId = id.equalsIgnoreCase("fromList") ? selectedUserId : id;
+        response = DummyApiRequest.getUserById(targetId);
+        System.out.println("🔍 Request detail user ID: " + targetId);
         response.prettyPrint();
     }
 
@@ -55,7 +56,6 @@ public class ApiUsersSteps {
 
     @When("sistem mengirim request DELETE user dengan ID {string}")
     public void deleteUser(String id) {
-        // Jika ID di feature file = "fromList", pakai ID hasil GET users
         String targetId = id.equalsIgnoreCase("fromList") ? selectedUserId : id;
         response = DummyApiRequest.deleteUser(targetId);
         System.out.println("🗑️ Menghapus user ID: " + targetId);
@@ -86,12 +86,8 @@ public class ApiUsersSteps {
 
     @Then("response berisi ID yang sama {string}")
     public void verifyIdMatch(String id) {
-        assertThat(response.jsonPath().getString("id"), equalTo(id));
-    }
-
-    @Then("response berisi field {string} yang tidak null")
-    public void verifyFieldNotNull(String field) {
-        assertThat(response.jsonPath().getString(field), notNullValue());
+        String expectedId = id.equalsIgnoreCase("fromList") ? selectedUserId : id;
+        assertThat(response.jsonPath().getString("id"), equalTo(expectedId));
     }
 
     @Then("response berisi ID yang sama seperti user yang dihapus {string}")

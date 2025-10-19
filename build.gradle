@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.sigitwahyudi.saucedemo'
+group = 'com.sigitwahyudi'
 version = '1.0-SNAPSHOT'
 sourceCompatibility = '19'
 
@@ -25,10 +25,13 @@ dependencies {
     // JUnit 5
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testImplementation 'org.junit.platform:junit-platform-suite:1.10.1'
 }
 
 test {
     useJUnitPlatform()
+
+    // Default execution (semua test)
     systemProperty 'browser', System.getProperty('browser', 'chrome')
     systemProperty 'headless', System.getProperty('headless', 'true')
     systemProperty 'cucumber.filter.tags', System.getProperty('cucumber.filter.tags', '')

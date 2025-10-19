@@ -2,17 +2,17 @@
 Feature: Pengujian API DummyAPI.io - Endpoint Users
 
   @positive
-  Scenario: Mendapatkan daftar user (limit 5)
-    When sistem mengirim request GET users dengan limit 5
+  Scenario: Mendapatkan daftar user (limit 10)
+    When sistem mengirim request GET users dengan limit 10
     Then status code yang diterima adalah 200
-    And jumlah data user pada response adalah 5
+    And jumlah data user pada response adalah 10
     And setiap data memiliki ID yang valid
 
   @positive
   Scenario: Mendapatkan detail user berdasarkan ID valid
-    When sistem mengirim request GET user dengan ID "60d0fe4f5311236168a109df"
+    When sistem mengirim request GET user dengan ID "fromList"
     Then status code yang diterima adalah 200
-    And response berisi ID yang sama "60d0fe4f5311236168a109df"
+    And response berisi ID yang sama "fromList"
 
   @negative
   Scenario: Mendapatkan detail user dengan ID tidak valid
