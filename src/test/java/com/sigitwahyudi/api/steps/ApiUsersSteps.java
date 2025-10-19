@@ -5,12 +5,14 @@ import io.restassured.response.Response;
 import com.sigitwahyudi.api.requests.DummyApiRequest;
 
 import java.util.Map;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class ApiUsersSteps {
     private Response response;
+    private static String selectedUserId; // simpan ID user dari GET list
 
     // ========================= GET =========================
 
@@ -18,6 +20,12 @@ public class ApiUsersSteps {
     public void getUsers(int limit) {
         response = DummyApiRequest.getUsers(limit);
         response.prettyPrint();
+
+        List<String> ids = response.jsonPath().getList("data.id");
+        if (ids != null && !ids.isEmpty()) {
+            selectedUserId = ids.get(0); // ambil user pertama
+            System.out.println("✅ ID user tersimpan untuk DELETE nanti: " + selectedUserId);
+        }
     }
 
     @When("sistem mengirim request GET user dengan ID {string}")
@@ -47,7 +55,10 @@ public class ApiUsersSteps {
 
     @When("sistem mengirim request DELETE user dengan ID {string}")
     public void deleteUser(String id) {
-        response = DummyApiRequest.deleteUser(id);
+        // Jika ID di feature file = "fromList", pakai ID hasil GET users
+        String targetId = id.equalsIgnoreCase("fromList") ? selectedUserId : id;
+        response = DummyApiRequest.deleteUser(targetId);
+        System.out.println("🗑️ Menghapus user ID: " + targetId);
         response.prettyPrint();
     }
 
@@ -85,7 +96,8 @@ public class ApiUsersSteps {
 
     @Then("response berisi ID yang sama seperti user yang dihapus {string}")
     public void verifyDeletedUserId(String id) {
-        assertThat(response.jsonPath().getString("id"), equalTo(id));
+        String expectedId = id.equalsIgnoreCase("fromList") ? selectedUserId : id;
+        assertThat(response.jsonPath().getString("id"), equalTo(expectedId));
     }
 
     @Then("response body berisi pesan error {string}")
