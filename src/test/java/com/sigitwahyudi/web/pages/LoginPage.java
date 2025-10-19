@@ -17,7 +17,8 @@ public class LoginPage {
     private By usernameField = By.id("loginusername");
     private By passwordField = By.id("loginpassword");
     private By loginButton = By.xpath("//button[text()='Log in']");
-
+    private By logoutMenu = By.id("logout2");
+    private By welcomeText = By.id("nameofuser"); // teks: "Welcome testuser"
 
     //======================================== Constructor ========================================//
     public LoginPage(WebDriver driver) {
@@ -25,6 +26,10 @@ public class LoginPage {
     }
 
     //======================================== Actions ========================================//
+    public void openHomePage() {
+        driver.get("https://www.demoblaze.com/index.html");
+    }
+
     public void clickMenuLogin() {
         driver.findElement(menuLoginButton).click();
     }
@@ -38,9 +43,9 @@ public class LoginPage {
 
     public void enterPassword(String password) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement usernameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(this.passwordField));
-        usernameInput.clear();
-        usernameInput.sendKeys(password);
+        WebElement passwordInput = wait.until(ExpectedConditions.visibilityOfElementLocated(this.passwordField));
+        passwordInput.clear();
+        passwordInput.sendKeys(password);
     }
 
     public void clickLogin() {
@@ -58,8 +63,18 @@ public class LoginPage {
 
     public boolean isLogoutVisible() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement logoutMenu = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout2")));
-        String text = logoutMenu.getText();
+        WebElement logout = wait.until(ExpectedConditions.visibilityOfElementLocated(logoutMenu));
+        String text = logout.getText();
         return text.equalsIgnoreCase("Log out");
+    }
+
+    public String getWelcomeText() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        try {
+            WebElement welcome = wait.until(ExpectedConditions.visibilityOfElementLocated(welcomeText));
+            return welcome.getText(); // contoh: "Welcome testuser"
+        } catch (TimeoutException e) {
+            return "";
+        }
     }
 }

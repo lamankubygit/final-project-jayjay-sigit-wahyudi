@@ -6,6 +6,13 @@ Feature: Login ke website Demoblaze
     And user login dengan username "standard_user" dan password "secret_sauce"
     And user berhasil masuk dan button menu logout terlihat
 
+  @positive
+  Scenario: Login berhasil menampilkan teks Welcome
+    Given user membuka halaman login Demoblaze
+    When user login dengan username "standard_user" dan password "secret_sauce"
+    Then user berhasil masuk dan button menu logout terlihat
+    And teks "Welcome standard_user" tampil di halaman utama
+
   @positive @closeBrowser
   Scenario: Menambahkan produk Apple monitor 24 ke cart
     When user klik menu "Monitors"

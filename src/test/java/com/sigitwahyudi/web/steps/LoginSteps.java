@@ -5,7 +5,6 @@ import com.sigitwahyudi.web.hooks.WebHooks;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class LoginSteps {
 
@@ -29,6 +28,9 @@ public class LoginSteps {
         Assertions.assertTrue(loginPage.isLogoutVisible(), "Menu Logout tidak terlihat setelah login!");
     }
 
-
-
+    @Then("teks {string} tampil di halaman utama")
+    public void teks_tampil_di_halaman_utama(String expectedText) {
+        String actualText = loginPage.getWelcomeText();
+        Assertions.assertEquals(expectedText, actualText, "Teks welcome tidak sesuai!");
+    }
 }

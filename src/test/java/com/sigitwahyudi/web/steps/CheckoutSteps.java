@@ -2,6 +2,7 @@ package com.sigitwahyudi.web.steps;
 
 import com.sigitwahyudi.web.hooks.WebHooks;
 import com.sigitwahyudi.web.pages.CheckoutPage;
+import com.sigitwahyudi.web.pages.LoginPage;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
