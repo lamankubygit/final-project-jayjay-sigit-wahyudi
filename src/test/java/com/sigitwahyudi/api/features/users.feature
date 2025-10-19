@@ -22,9 +22,9 @@ Feature: Pengujian API DummyAPI.io - Endpoint Users
 
   @positive
   Scenario: Menghapus user berdasarkan ID valid
-    When sistem mengirim request DELETE user dengan ID "60d0fe4f5311236168a109f9"
+    When sistem mengirim request DELETE user dengan ID "60d0fe4f5311236168a109fd"
     Then status code yang diterima adalah 200
-    And response berisi ID yang sama seperti user yang dihapus "60d0fe4f5311236168a109f9"
+    And response berisi ID yang sama seperti user yang dihapus "60d0fe4f5311236168a109fd"
 
   @negative
   Scenario: Menghapus user yang sudah tidak ada atau sudah terhapus

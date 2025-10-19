@@ -11,13 +11,10 @@ Feature: Login ke website Demoblaze
     Then teks "Welcome standard_user" tampil di halaman utama
 
   @positive @closeBrowser
-  Scenario: Melihat produk di cart dan verifikasi harga
-    Given produk "Apple monitor 24" sudah ada di cart
-    When user membuka menu Cart
-    Then produk "Apple monitor 24" tampil di daftar cart
-    And harga produk sama dengan harga saat di halaman produk
-    When user menghapus produk dari cart
-    Then produk tidak tampil lagi di daftar cart
+  Scenario: Mengirim pesan melalui menu Contact
+    When user membuka menu Contact
+    And user mengisi form kontak dengan email "standard_user@email.com", nama "standard_user", dan pesan "spontan, Uhuy!!!"
+    Then muncul pop up notifikasi "Thanks for the message!!"
 
   @positive @closeBrowser
   Scenario: Menambahkan produk Apple monitor 24 ke cart
@@ -25,6 +22,21 @@ Feature: Login ke website Demoblaze
     And user pilih produk "Apple monitor 24"
     And user klik tombol Add to cart
     Then muncul pop up notifikasi "Product added."
+
+  @positive @closeBrowser
+  Scenario: Mengosongkan seluruh produk di cart
+    When user membuka menu Cart untuk mengosongkan produk
+    And user menghapus semua produk dari cart
+    Then cart menjadi kosong
+
+  @positive @closeBrowser
+  Scenario: Melihat produk di cart dan verifikasi harga
+    Given produk "Apple monitor 24" sudah ada di cart
+    When user membuka menu Cart
+    Then produk "Apple monitor 24" tampil di daftar cart
+    And harga produk sama dengan harga saat di halaman produk
+    When user menghapus produk dari cart
+    Then produk tidak tampil lagi di daftar cart
 
   @positive @closeBrowser
   Scenario: End to end checkout produk Apple monitor 24
@@ -35,7 +47,7 @@ Feature: Login ke website Demoblaze
     When user membuka menu Cart
     And user klik tombol Place Order
     And user mengisi form pemesanan:
-      | name      | testuser          |
+      | name      | standard_user          |
       | country   | Indonesia         |
       | city      | Bandung           |
       | card      | 1234567890123456  |

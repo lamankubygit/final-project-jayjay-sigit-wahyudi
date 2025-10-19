@@ -24,7 +24,7 @@ public class CheckoutSteps {
     @When("user pilih produk {string}")
     public void user_pilih_produk(String productName) {
         checkoutPage.selectProduct(productName);
-        selectedProductPrice = checkoutPage.getProductPrice(); // simpan harga dari halaman produk
+        selectedProductPrice = checkoutPage.getProductPrice();
         System.out.println("Harga produk di halaman produk: " + selectedProductPrice);
     }
 
@@ -116,4 +116,37 @@ public class CheckoutSteps {
     public void user_klik_tombol_logout() {
         checkoutPage.logout();
     }
+
+    @When("user membuka menu Contact")
+    public void user_membuka_menu_contact() {
+        driver = WebHooks.getDriver();
+        checkoutPage = new CheckoutPage(driver);
+        checkoutPage.openContactForm();
+    }
+
+    @When("user mengisi form kontak dengan email {string}, nama {string}, dan pesan {string}")
+    public void user_mengisi_form_kontak(String email, String name, String message) {
+        checkoutPage.fillContactForm(email, name, message);
+    }
+
+    @When("user membuka menu Cart untuk mengosongkan produk")
+    public void user_membuka_menu_cart_untuk_mengosongkan_produk() {
+        driver = WebHooks.getDriver();
+        checkoutPage = new CheckoutPage(driver);
+        checkoutPage.openCart();
+    }
+
+
+    @When("user menghapus semua produk dari cart")
+    public void user_menghapus_semua_produk_dari_cart() {
+        driver = WebHooks.getDriver();
+        checkoutPage = new CheckoutPage(driver);
+        checkoutPage.deleteAllProductsFromCart();
+    }
+
+    @Then("cart menjadi kosong")
+    public void cart_menjadi_kosong() {
+        Assertions.assertTrue(checkoutPage.isCartEmpty(), "Cart masih berisi produk!");
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.sigitwahyudi.web.pages;
 
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -34,7 +35,7 @@ public class CheckoutPage {
     // =================== Constructor =================== //
     public CheckoutPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     // =================== Actions =================== //
@@ -53,23 +54,27 @@ public class CheckoutPage {
     }
 
     public String getAlertText() {
-        wait.until(ExpectedConditions.alertIsPresent());
+        WebDriverWait alertWait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        alertWait.until(ExpectedConditions.alertIsPresent());
         Alert alert = driver.switchTo().alert();
         return alert.getText();
     }
 
     public void acceptAlert() {
         try {
-            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(10));
             shortWait.until(ExpectedConditions.alertIsPresent());
             Alert alert = driver.switchTo().alert();
             alert.accept();
-        } catch (TimeoutException | NoAlertPresentException ignored) {}
+            System.out.println("✅ Alert diterima: " + alert.getText());
+        } catch (TimeoutException | NoAlertPresentException e) {
+            System.out.println("⚠️ Tidak ada alert yang muncul (mungkin sudah auto-dismiss)");
+        }
     }
 
     public String getProductPrice() {
         String text = wait.until(ExpectedConditions.visibilityOfElementLocated(priceOnProductPage)).getText();
-        return text.replaceAll("[^0-9]", ""); // ambil hanya angka
+        return text.replaceAll("[^0-9]", "");
     }
 
     public void ensureProductInCart(String productName) {
@@ -119,26 +124,20 @@ public class CheckoutPage {
     }
 
     public void fillOrderForm(String name, String country, String city, String card, String month, String year) {
-        // Pastikan popup sudah tampil penuh
         wait.until(ExpectedConditions.visibilityOfElementLocated(nameField));
-
-        // Scroll ke popup agar field terlihat
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", driver.findElement(nameField));
 
-        // Fokus ke elemen dulu
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameField));
         nameInput.click();
         nameInput.clear();
         nameInput.sendKeys(name);
 
-        // Isi field lainnya
         driver.findElement(countryField).sendKeys(country);
         driver.findElement(cityField).sendKeys(city);
         driver.findElement(cardField).sendKeys(card);
         driver.findElement(monthField).sendKeys(month);
         driver.findElement(yearField).sendKeys(year);
     }
-
 
     public void clickPurchase() {
         wait.until(ExpectedConditions.elementToBeClickable(purchaseButton)).click();
@@ -156,4 +155,38 @@ public class CheckoutPage {
     public void logout() {
         wait.until(ExpectedConditions.elementToBeClickable(logoutButton)).click();
     }
+
+    // =================== Locator untuk Contact =================== //
+    private By contactMenu = By.xpath("//a[text()='Contact']");
+    private By contactEmail = By.id("recipient-email");
+    private By contactName = By.id("recipient-name");
+    private By contactMessage = By.id("message-text");
+    private By sendMessageButton = By.xpath("//button[text()='Send message']");
+
+    // =================== Actions untuk Contact =================== //
+    public void openContactForm() {
+        wait.until(ExpectedConditions.elementToBeClickable(contactMenu)).click();
+    }
+
+    public void fillContactForm(String email, String name, String message) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(contactEmail)).sendKeys(email);
+        driver.findElement(contactName).sendKeys(name);
+        driver.findElement(contactMessage).sendKeys(message);
+        driver.findElement(sendMessageButton).click();
+        try { Thread.sleep(1200); } catch (InterruptedException ignored) {}
+    }
+
+    public void deleteAllProductsFromCart() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(cartItemName));
+        while (true) {
+            try {
+                WebElement deleteBtn = driver.findElement(deleteButton);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", deleteBtn);
+                Thread.sleep(1500);
+            } catch (NoSuchElementException e) {
+                break;
+            } catch (InterruptedException ignored) {}
+        }
+    }
+
 }

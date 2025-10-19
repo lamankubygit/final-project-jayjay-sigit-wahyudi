@@ -72,7 +72,7 @@ public class LoginPage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             WebElement welcome = wait.until(ExpectedConditions.visibilityOfElementLocated(welcomeText));
-            return welcome.getText(); // contoh: "Welcome testuser"
+            return welcome.getText();
         } catch (TimeoutException e) {
             return "";
         }
