@@ -1,0 +1,64 @@
+name: Web & API Automation Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '19'
+
+      - name: Give permission for Gradle
+        run: chmod +x gradlew
+
+      - name: Install Chrome & ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+          echo "Chrome installed at: $(which chromium-browser)"
+          echo "ChromeDriver installed at: $(which chromedriver)"
+
+      - name: Build project
+        run: ./gradlew clean build -x test --no-daemon
+
+      - name: Jalankan API Automation Tests
+        run: ./gradlew testApi --no-daemon
+
+      - name: Upload API Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-report
+          path: build/reports/cucumber/api.html
+
+      - name: Jalankan Web Automation Tests (Headless)
+        run: |
+          export CHROME_BIN=/usr/bin/chromium-browser
+          export CHROMEDRIVER=/usr/bin/chromedriver
+          ./gradlew testWeb -Dheadless=true --no-daemon -Dbrowser=chrome
+
+      - name: Upload Web Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-report
+          path: build/reports/cucumber/web.html
+
+      - name: Upload All Cucumber Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-cucumber-reports
+          path: build/reports/cucumber/

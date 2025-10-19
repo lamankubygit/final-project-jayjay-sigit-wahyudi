@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.sigitwahyudi.saucedemo'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = '19'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Selenium
+    implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
+    implementation 'io.github.bonigarcia:webdrivermanager:5.9.2'
+
+    // Cucumber
+    testImplementation 'io.cucumber:cucumber-java:7.18.1'
+    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.18.1'
+
+    // RestAssured
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'browser', System.getProperty('browser', 'chrome')
+    systemProperty 'headless', System.getProperty('headless', 'true')
+    systemProperty 'cucumber.filter.tags', System.getProperty('cucumber.filter.tags', '')
+    systemProperty 'cucumber.plugin', System.getProperty(
+            'cucumber.plugin',
+            'pretty, html:build/reports/cucumber/all.html'
+    )
+}
+
+tasks.register('testWeb', Test) {
+    useJUnitPlatform()
+    dependsOn testClasses
+    systemProperty 'browser', 'chrome'
+    systemProperty 'headless', System.getProperty('headless', 'true')
+    systemProperty 'cucumber.filter.tags', '@web'
+    systemProperty 'cucumber.plugin', 'pretty, html:build/reports/cucumber/web.html'
+    description = 'Menjalankan automation test untuk Web UI (Chrome Headless)'
+    group = 'verification'
+}
+
+tasks.register('testApi', Test) {
+    useJUnitPlatform()
+    dependsOn testClasses
+    systemProperty 'cucumber.filter.tags', '@api'
+    systemProperty 'cucumber.plugin', 'pretty, html:build/reports/cucumber/api.html'
+    description = 'Menjalankan automation test untuk API DummyAPI.io'
+    group = 'verification'
+}
+
+tasks.register('testWebFirefox', Test) {
+    useJUnitPlatform()
+    dependsOn testClasses
+    systemProperty 'browser', 'firefox'
+    systemProperty 'headless', System.getProperty('headless', 'true')
+    systemProperty 'cucumber.filter.tags', '@web'
+    systemProperty 'cucumber.plugin', 'pretty, html:build/reports/cucumber/web-firefox.html'
+    description = 'Menjalankan automation test Web UI di Firefox'
+    group = 'verification'
+}
